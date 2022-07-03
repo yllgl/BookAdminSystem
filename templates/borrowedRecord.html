@@ -1,0 +1,49 @@
+{% extends "empty.html" %}
+{% load bootstrap_pagination %}
+{% load static %}
+
+{% block content %}
+                <div class="card">
+              <div class="card-body">
+                <div id="table-default">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th><button class="table-sort" data-sort="sort-title">书名</button></th>
+                        <th><button class="table-sort" data-sort="sort-user">用户</button></th>
+                        <th><button class="table-sort" data-sort="sort-state">操作</button></th>
+                        <th><button class="table-sort" data-sort="sort-datetime">时间</button></th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-tbody">
+                    {% for item in page_obj %}
+                              <tr>
+                        <td class="sort-title">{{ item.bookid.title }}</td>
+                        <td class="sort-user">{{ item.userid.username }}</td>
+                        <td class="sort-state" data-state="{{item.category }}">{{ item.get_category_display }}</td>
+                        <td class="sort-datetime" data-date="{{ item.datetime.timestamp }}">{{ item.datetime}}</td>
+                      </tr>
+                          {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+    {% bootstrap_paginate page_obj  extra_pagination_classes="justify-content-center mt-3" %}
+
+{% endblock %}
+{% block script %}
+<script>
+      document.addEventListener("DOMContentLoaded", function() {
+      const list = new List('table-default', {
+      	sortClass: 'table-sort',
+      	listClass: 'table-tbody',
+      	valueNames: [ 'sort-title', 'sort-user',
+            { attr: 'data-state', name: 'sort-state' },
+      		{ attr: 'data-date', name: 'sort-datetime' },
+      	]
+      });
+      })
+    </script>
+
+{% endblock %}

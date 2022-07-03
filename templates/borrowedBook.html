@@ -1,0 +1,139 @@
+{% extends "empty.html" %}
+{% load static %}
+
+{% block content %}
+ {% for item in page_obj %}
+                          <div class="container-xl">
+            <div class="row row-cards">
+              <div class="col-md-12">
+                <div class="card d-flex flex-column">
+  <div class="row row-0 flex-fill">
+    <div class="col-sm-2">
+      <a href="javascript:void(0)">
+        <img src="{{ item.imgdir }}" style="width: 200px;height: 200px" alt="无法加载图片">
+      </a>
+    </div>
+    <div class="col">
+      <div class="card-body">
+        <h3 class="h2">{{ item.title }}</h3>
+        <div class="text-muted text-truncate">{{ item.summary }}</div>
+        <div class="container ">
+            <div class="row">
+                            <div class="col-sm-auto border-end">
+            <h4>出版日期:</h4>
+            <div class="text-body">{{ item.pubdate }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>定价:</h4>
+            <div class="text-body">{{ item.price }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>语言:</h4>
+            <div class="text-body">{{ item.language }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>中图法分类:</h4>
+            <div class="text-body">{{ item.chinaclass }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>装帧:</h4>
+            <div class="text-body">{{ item.binding }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>出版地:</h4>
+            <div class="text-body">{{ item.publisherAddress }}</div>
+          </div>
+            <div class="col-sm-auto">
+            <h4>出版社:</h4>
+            <div class="text-body">{{ item.publisher }}</div>
+          </div>
+  </div>
+            <div class="row">
+          <div class="col-sm-auto border-end">
+            <h4>ISBN:</h4>
+            <div class="text-body">{{ item.isbn }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>作者:</h4>
+            <div class="text-body">{{ item.author }}</div>
+          </div>
+                <div class="col-sm-auto border-end">
+            <h4>译者:</h4>
+            <div class="text-body">{{ item.translator }}</div>
+                </div>
+            <div class="col-sm-auto ">
+            <h4>类别:</h4>
+            <div class="text-body">{{ item.get_category_display }}</div>
+          </div>
+                          <div class="col">
+            <a id="item-btn-{{ item.id }}" href="javascript:void(0)" {% if not item.onboard %}data-bs-toggle="modal" data-bs-target="#modal-simple-{{ item.id }}" {% endif %}class="btn float-end {% if not item.onboard %}btn-primary{% else %}btn-success{% endif %}" style="width: 100px">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        {% if not item.onboard %}还书{% else %}已归还{% endif %}
+                      </a>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+        <div class="modal modal-blur fade" id="modal-simple-{{ item.id }}" tabindex="-1" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">确认还书</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+               <div class="d-flex py-1 align-items-center">
+                              <img src="{{ item.imgdir }}" id="img-{{ item.id }}" style="width: 100px;height: 100px;" />
+                              <div class="flex-fill">
+                                <h2 id="title-{{ item.id }}">{{ item.title }}</h2>
+                                <div class="text-muted">作者：{{ item.author }}</div>
+                              </div>
+                            </div>
+
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+            <button type="button" id="borrow-btn-{{ item.id }}" class="btn btn-primary" data-bs-dismiss="modal">确认还书</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+{% endblock content %}
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script>
+    $(document).ready(function() {
+        {% for item in page_obj %}
+            $('#borrow-btn-{{ item.id }}').click(function () {
+                $.ajax(
+                    {
+                    url: "/borrowedBook/",  //    => /order/delete/?uid=123
+                    type: "post",
+                    data: {"id":{{item.id}}},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert("归还成功");
+                            $("#item-btn-{{ item.id }}").replaceWith('<a href="javascript:void(0)" id="item-btn-{{ item.id }}" class="btn float-end btn-success" style="width: 100px">已归还</a>')
+
+                        } else {
+                            // 删除失败
+                            alert(res.error);
+                        }
+                    }
+                }
+                )
+            })
+        {% endfor %}
+    })
+    </script>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends "empty.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% load myfilter %}
+{% load bootstrap_pagination %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {% for item in page_obj %}
+                          <div class="container-xl">
+            <div class="row row-cards">
+              <div class="col-md-12">
+                <div class="card d-flex flex-column">
+  <div class="row row-0 flex-fill">
+    <div class="col-sm-2">
+      <a href="javascript:void(0)">
+        <img src="{{ item.imgdir }}" style="width: 150px;height: 210px;" alt="无法加载图片">
+      </a>
+    </div>
+    <div class="col">
+      <div class="card-body">
+        <h3 class="h2">{{ item.title }}</h3>
+        <div class="text-muted text-truncate">{{ item.summary }}</div>
+        <div class="container ">
+            <div class="row">
+                            <div class="col-sm-auto border-end">
+            <h4>出版日期:</h4>
+            <div class="text-body">{{ item.pubdate }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>定价:</h4>
+            <div class="text-body">{{ item.price }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>语言:</h4>
+            <div class="text-body">{{ item.language }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>中图法分类:</h4>
+            <div class="text-body">{{ item.chinaclass }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>装帧:</h4>
+            <div class="text-body">{{ item.binding }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>出版地:</h4>
+            <div class="text-body">{{ item.publisherAddress }}</div>
+          </div>
+            <div class="col-sm-auto">
+            <h4>出版社:</h4>
+            <div class="text-body">{{ item.publisher }}</div>
+          </div>
+                <div class="col">
+            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modal-large" uid="{{ item.id }}" class="btn btn-primary float-end btn-edit" style="width: 100px">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        Edit
+                      </a>
+          </div>
+  </div>
+            <div class="row">
+          <div class="col-sm-auto border-end">
+            <h4>ISBN:</h4>
+            <div class="text-body">{{ item.isbn }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>作者:</h4>
+            <div class="text-body">{{ item.author }}</div>
+          </div>
+                <div class="col-sm-auto border-end">
+            <h4>译者:</h4>
+            <div class="text-body">{{ item.translator }}</div>
+                </div>
+            <div class="col-sm-auto ">
+            <h4>类别:</h4>
+            <div class="text-body">{{ item.get_category_display }}</div>
+          </div>
+                          <div class="col">
+            <a href="javascript:void(0)" uid="{{ item.id }}" data-bs-toggle="modal" data-bs-target="#modal-danger" class="btn btn-danger float-end btn-delete" style="width: 100px">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Delete
+                      </a>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+    {% endfor %}
+    {% bootstrap_paginate page_obj  extra_pagination_classes="justify-content-center mt-3" %}
+ <div class="modal modal-blur fade" id="modal-large" tabindex="-1" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">编辑</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="post" id="formAdd">
+          {% csrf_token %}
+              {{form|crispy}}
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+            <button type="button" id="btnSave" class="btn btn-primary" data-bs-dismiss="modal">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal modal-blur fade" id="modal-danger" tabindex="-1" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-status bg-danger"></div>
+          <div class="modal-body text-center py-4">
+            <!-- Download SVG icon from http://tabler-icons.io/i/alert-triangle -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 9v2m0 4v.01"></path><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"></path></svg>
+            <h3>确定吗？</h3>
+            <div class="text-muted">删除后，所有与之关联的数据都会被永久删除，请谨慎操作。</div>
+          </div>
+          <div class="modal-footer">
+            <div class="w-100">
+              <div class="row">
+                <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
+                    取消
+                  </a></div>
+                <div class="col"><a href="#" id="modal-btn-delete" class="btn btn-danger w-100" data-bs-dismiss="modal">
+                    确认删除
+                  </a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script>
+let DELETE_ID;
+let EDIT_ID;
+$(function () {
+            bindBtnSaveEvent();
+            bindBtnDeleteEvent();
+            bindBtnConfirmDeleteEvent();
+            bindBtnEditEvent();
+        })
+function bindBtnDeleteEvent() {
+            $(".btn-delete").click(function () {
+                DELETE_ID = $(this).attr("uid");
+
+            });
+        }
+function doEdit() {
+            // 向后台发送请求（添加的Ajax请求）
+            $.ajax({
+                url: "/bookedit/" + "?uid=" + EDIT_ID,
+                type: "post",
+                data: $("#formAdd").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        // 清空表单  $("#formAdd")是jQuery对象 -> $("#formAdd")[0] DOM对象
+                        $("#formAdd")[0].reset();
+                        // 刷新页面
+                        location.reload();
+                    } else {
+                        if (res.tips) {
+                            alert(res.tips);
+                        } else {
+                            // 把错误信息显示在对话框中。
+                            $.each(res.error, function (name, errorList) {
+                                $("#id_" + name).next().text(errorList[0]);
+                            })
+                        }
+                    }
+                }
+            })
+        }
+function bindBtnSaveEvent() {
+            $("#btnSave").click(function () {
+                // 清除错误信息
+                $(".error-msg").empty();
+                if (EDIT_ID) {
+                    // 编辑
+                    doEdit();
+                }
+            });
+        }
+
+function bindBtnEditEvent() {
+            $(".btn-edit").click(function () {
+                // 清空对话框中的数据
+                $("#formAdd")[0].reset();
+                var uid = $(this).attr("uid");
+                EDIT_ID = uid;
+
+                // 发送Ajax去后端获取当前行的相关数据  /order/detail/?uid=123
+                $.ajax({
+                    url: "/bookdetail/",
+                    type: "get",
+                    data: {
+                        "id" : uid
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            console.log(res)
+                            $.each(res.data, function (name, value) {
+                                $("#id_" + name+"[type!='checkbox']").val(value);
+                                $("#id_" + name+"[type='checkbox']").attr("checked", value);
+                            })
+
+
+                        } else {
+                            alert(res.error);
+                        }
+                    }
+                })
+            });
+        }
+function bindBtnConfirmDeleteEvent() {
+            $("#modal-btn-delete").click(function () {
+                $.ajax({
+                    url: "/deletebook/",  //    => /order/delete/?uid=123
+                    type: "GET",
+                    data: {
+                        id: DELETE_ID
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.reload();
+                        } else {
+                            // 删除失败
+                            alert(res.error);
+                        }
+                    }
+                })
+            });
+        }
+</script>
+{% endblock %}

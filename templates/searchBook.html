@@ -1,0 +1,153 @@
+{% extends "empty.html" %}
+{% load myfilter %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% block content %}
+<div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first ">
+                <form action="" method="get">
+                  <div class="input-icon my-4">
+                    <span class="input-icon-addon">
+                      <!-- Download SVG icon from http://tabler-icons.io/i/search -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
+                    </span>
+                    <input type="text" name="q" value="{{ request.GET.q }}" class="form-control w-25 d-inline-block" placeholder="请输入搜索的书名或ISBN号" aria-label="Search in website"><button type="submit" class="btn btn-primary d-inline-block">搜索</button>
+                  </div>
+                </form>
+              </div>
+    {% for item in page_obj %}
+                          <div class="container-xl">
+            <div class="row row-cards">
+              <div class="col-md-12">
+                <div class="card d-flex flex-column">
+  <div class="row row-0 flex-fill">
+    <div class="col-sm-2">
+      <a href="javascript:void(0)">
+        <img src="{{ item.imgdir }}" style="width: 200px;height: 200px" alt="无法加载图片">
+      </a>
+    </div>
+    <div class="col">
+      <div class="card-body">
+        <h3 class="h2">{{ item.title }}</h3>
+        <div class="text-muted text-truncate">{{ item.summary }}</div>
+        <div class="container ">
+            <div class="row">
+                            <div class="col-sm-auto border-end">
+            <h4>出版日期:</h4>
+            <div class="text-body">{{ item.pubdate }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>定价:</h4>
+            <div class="text-body">{{ item.price }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>语言:</h4>
+            <div class="text-body">{{ item.language }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>中图法分类:</h4>
+            <div class="text-body">{{ item.chinaclass }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>装帧:</h4>
+            <div class="text-body">{{ item.binding }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>出版地:</h4>
+            <div class="text-body">{{ item.publisherAddress }}</div>
+          </div>
+            <div class="col-sm-auto">
+            <h4>出版社:</h4>
+            <div class="text-body">{{ item.publisher }}</div>
+          </div>
+  </div>
+            <div class="row">
+          <div class="col-sm-auto border-end">
+            <h4>ISBN:</h4>
+            <div class="text-body">{{ item.isbn }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>作者:</h4>
+            <div class="text-body">{{ item.author }}</div>
+          </div>
+                <div class="col-sm-auto border-end">
+            <h4>译者:</h4>
+            <div class="text-body">{{ item.translator }}</div>
+                </div>
+            <div class="col-sm-auto ">
+            <h4>类别:</h4>
+            <div class="text-body">{{ item.get_category_display }}</div>
+          </div>
+                          <div class="col">
+            <a id="item-btn-{{ item.id }}" href="javascript:void(0)" {% if item.onboard %}data-bs-toggle="modal" data-bs-target="#modal-simple-{{ item.id }}" {% endif %}class="btn float-end {% if item.onboard %}btn-primary{% else %}btn-danger{% endif %}" style="width: 100px">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        {% if item.onboard %}借书{% else %}不在架上{% endif %}
+                      </a>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+        <div class="modal modal-blur fade" id="modal-simple-{{ item.id }}" tabindex="-1" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">确认租借</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+               <div class="d-flex py-1 align-items-center">
+                              <img src="{{ item.imgdir }}" id="img-{{ item.id }}" style="width: 100px;height: 100px;" />
+                              <div class="flex-fill">
+                                <h2 id="title-{{ item.id }}">{{ item.title }}</h2>
+                                <div class="text-muted">作者：{{ item.author }}</div>
+                              </div>
+                            </div>
+
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+            <button type="button" id="borrow-btn-{{ item.id }}" class="btn btn-primary" data-bs-dismiss="modal">确认借书</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% bootstrap_paginate page_obj  extra_pagination_classes="justify-content-center mt-3" %}
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script>
+    $(document).ready(function() {
+        {% for item in page_obj %}
+            $('#borrow-btn-{{ item.id }}').click(function () {
+                $.ajax(
+                    {
+                    url: "/searchBook/",  //    => /order/delete/?uid=123
+                    type: "post",
+                    data: {"id":{{item.id}}},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert("借阅成功");
+                            $("#item-btn-{{ item.id }}").replaceWith('<a href="javascript:void(0)" id="item-btn-{{ item.id }}" class="btn float-end btn-danger" style="width: 100px">不在架上</a>')
+
+                        } else {
+                            // 删除失败
+                            alert(res.error);
+                        }
+                    }
+                }
+                )
+            })
+        {% endfor %}
+    })
+    </script>
+{% endblock %}

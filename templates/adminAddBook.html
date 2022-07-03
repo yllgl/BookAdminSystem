@@ -1,0 +1,195 @@
+{% extends "empty.html" %}
+{% load static %}
+{% load myfilter %}
+{% block content %}
+    <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first ">
+                <form action="" method="get">
+                    <select class="form-control" id="category" name="category">
+                <option value="">全部</option>
+                        {% for opt in options %}
+                            <option value="{{ opt.0 }}">{{ opt.1 }}</option>
+                        {% endfor %}
+			</select>
+                  <div class="input-icon">
+                    <span class="input-icon-addon">
+                      <!-- Download SVG icon from http://tabler-icons.io/i/search -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
+                    </span>
+                    <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search…" aria-label="Search in website">
+                  </div>
+                </form>
+              </div>
+
+    {% if errcode %}
+        请求失败：返回值{{ err }}
+        {% else %}
+        {% for item in page_obj %}
+                          <div class="container-xl" id="item-{{ item.id }}">
+            <div class="row row-cards">
+              <div class="col-md-12">
+                <div class="card d-flex flex-column">
+  <div class="row row-0 flex-fill">
+    <div class="col-sm-2">
+      <a href="#">
+        <img src="{{ item.imgdir }}" style="height: 200px;width: 200px" alt="无法加载图片">
+      </a>
+    </div>
+    <div class="col">
+      <div class="card-body">
+        <h3 class="h2">{{ item.title }}</h3>
+        <div class="text-muted text-truncate">{{ item.summary }}</div>
+        <div class="container ">
+            <div class="row">
+                            <div class="col-sm-auto border-end">
+            <h4>出版日期:</h4>
+            <div class="text-body">{{ item.pubdate }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>定价:</h4>
+            <div class="text-body">{{ item.price }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>语言:</h4>
+            <div class="text-body">{{ item.language }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>中图法分类:</h4>
+            <div class="text-body">{{ item.chinaclass }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>装帧:</h4>
+            <div class="text-body">{{ item.binding }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>出版地:</h4>
+            <div class="text-body">{{ item.publisherAddress }}</div>
+          </div>
+            <div class="col-sm-auto">
+            <h4>出版社:</h4>
+            <div class="text-body">{{ item.publisher }}</div>
+          </div>
+                <div class="col">
+            <a href="javascript:void(0)" id="addbtn-{{ item.id }}"{% if not item.isexist %}data-bs-toggle="modal" data-bs-target="#modal-scrollable-{{ item.id }}"{% endif %} class="btn float-end {% if item.isexist %}btn-danger{% else %}btn-primary{% endif %}" style="width: 100px">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        {% if item.isexist %}已{% endif %}添加
+                      </a>
+          </div>
+  </div>
+            <div class="row">
+          <div class="col-sm-auto border-end">
+            <h4>ISBN:</h4>
+            <div class="text-body">{{ item.isbn }}</div>
+          </div>
+            <div class="col-sm-auto border-end">
+            <h4>作者:</h4>
+            <div class="text-body">{{ item.author }}</div>
+          </div>
+                <div class="col-sm-auto border-end">
+            <h4>译者:</h4>
+            <div class="text-body">{{ item.translator }}</div>
+                </div>
+            <div class="col-sm-auto ">
+            <h4>类别:</h4>
+            <div class="text-body">{{ item.category }}</div>
+          </div>
+
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+            <div class="modal modal-blur fade" id="modal-scrollable-{{ item.id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">是否确认添加</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+                <div class="d-flex py-1 align-items-center">
+                              <img src="{{ item.imgdir }}" id="img-{{ item.id }}" style="width: 100px;height: 100px;" />
+                              <div class="flex-fill">
+                                <h2 id="title-{{ item.id }}">{{ item.title }}</h2>
+                                <div class="text-muted">作者：{{ item.author }}</div>
+                              </div>
+                            </div>
+              <div><b>ISBN：</b><span id="isbn-{{ item.id }}">{{ item.isbn }}</span></div>
+              <div><b>译者：</b><span id="translator-{{ item.id }}">{{ item.translator }}</span></div>
+              <div><b>中图分类号：</b><span id="chinaclass-{{ item.id }}">{{ item.chinaclass }}</span></div>
+              <div><b>装帧：</b><span id="binding-{{ item.id }}">{{ item.binding }}</span></div>
+              <div><b>语言：</b><span id="language-{{ item.id }}">{{ item.language }}</span></div>
+              <div><b>出版社：</b><span id="publisher-{{ item.id }}">{{ item.publisher }}</span></div>
+              <div><b>出版地：</b><span id="publisherAddress-{{ item.id }}">{{ item.publisherAddress }}</span></div>
+              <div><b>定价：</b><span id="price-{{ item.id }}">{{ item.price }}</span></div>
+              <div><b>10位ISBN号：</b><span id="isbn10-{{ item.id }}">{{ item.isbn10 }}</span></div>
+              <div><b>类别：</b><span id="category-{{ item.id }}">{{ item.category }}</span></div>
+              <div><b>出版日期：</b><span id="pubdate-{{ item.id }}">{{ item.pubdate }}</span></div>
+              <div><b>页数：</b><span id="page-{{ item.id }}">{{ item.page }}</span></div>
+              <div><b>内容简介：</b><span id="summary-{{ item.id }}">{{ item.summary }}</span></div>
+
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btn-{{ item.id }}">确认添加</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <ul class="pagination justify-content-center mt-3">
+                      <li class="page-item">
+                        <a class="btn {% if request.GET.page == '1' %}disabled{% endif %}" href="?page={{request.GET.page|prevpage:total}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" tabindex="-1" aria-disabled="true">
+                          <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>
+                          prev
+                        </a>
+                      </li>
+                      <li class="page-item">
+                        <a class="btn {% if request.GET.page == total %}disabled{% endif %}" href="?page={{request.GET.page|nextpage:total}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                          next <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>
+                        </a>
+                      </li>
+                    </ul>
+    {% endif %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script type="text/javascript">
+{% if errcode %}
+        {% else %}
+    $(document).ready(function(){
+        {% for item in page_obj %}
+            {% if item.isexist %}
+                {% else %}
+    $('#btn-{{ item.id }}').click(function(){
+        $.ajax({
+                    url: "/adminAddBook/",  //    => /order/delete/?uid=123
+                    type: "post",
+                    data: {"data":JSON.stringify({{ item|safe }}),"page":{{request.GET.page|default:1}}},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert("添加成功");
+                            $("#addbtn-{{ item.id }}").replaceWith('<a href="javascript:void(0)" id="addbtn-{{ item.id }}" class="btn float-end btn-danger" style="width: 100px">已添加</a>')
+
+                        } else {
+                            // 删除失败
+                            alert(res.error);
+                        }
+                    }
+                })
+    });
+{% endif %}
+    {% endfor %}
+    });
+    {% endif %}
+    </script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "empty.html" %}
+{% load static %}
+{% block content %}
+    <div class= "row">
+    <div class="col-sm">
+        <table id="table_db" class="table table-bordered table-hover" style="width: 100%">
+            <thead>
+                <tr>
+                    <th scope="col">书名</th>
+                    <th scope="col">用户</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">操作时间</th>
+                </tr>
+            </thead>
+            <tbody >
+                {% for item in data %}
+                <tr>
+                    <td> {{ item.bookid.title }}</td>
+                    <td> {{ item.userid.username }}</td>
+                    <td> {{  item.get_category_display }} </td>
+                <td> {{  item.datetime }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href={% static "DataTables/datatables.min.css" %}/>
+
+{% endblock %}
+{% block script %}
+    <script src="{% static  'js/jquery-3.6.0.min.js' %}"></script>
+
+    <script src="{% static  'DataTables/datatables.min.js' %}"></script>
+<script>
+var jq = jQuery.noConflict(true);
+jq(document).ready(function () {
+    jq('#table_db').DataTable( {
+        "paging": true,
+        "searching": true,
+        "autoWidth": true,
+        "ordering": true,
+
+    }
+    );
+} );
+</script>
+{% endblock %}
